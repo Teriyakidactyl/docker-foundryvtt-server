@@ -33,5 +33,6 @@ EXPOSE 30000/TCP
 
 VOLUME ["$DATA_PATH"]
 
-ENTRYPOINT ["./$SCRIPTS/fvtt_up.sh"] 
+ENTRYPOINT "$SCRIPTS/fvtt_up.sh"
+
 CMD ["node", "$APP_FILES/main.mjs", "--port=30000", "--headless", "--dataPath=$DATA_PATH", "--noupnp", "--noupdate"]
