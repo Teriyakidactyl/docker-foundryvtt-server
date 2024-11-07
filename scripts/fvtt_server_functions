@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Refference Foundy CLI https://github.com/foundryvtt/foundryvtt-cli
+# TODO package manager, Example (dead): https://github.com/cswendrowski/foundryget
+
+update_app() {
+    # Check if $APP_FILES/main.mjs exists
+    if [ ! -f "$APP_FILES/main.mjs" ]; then
+        log "$APP_FILES/main.mjs does not exist. Downloading the application..."
+
+        # Download the Foundry VTT archive
+        wget -O $APP_ARCHIVE "${FOUNDRY_RELEASE_URL}"
+
+        # Unzip the resources into $APP_FILES
+        unzip -d $APP_FILES $APP_ARCHIVE 'resources/*'
+
+        # Optionally, you can delete the archive after extraction to save space
+        rm -f $APP_ARCHIVE
+
+        log "Foundry VTT has been updated successfully."
+    else
+        log "$APP_FILES/main.mjs already exists. Skipping download."
+    fi
+}
+
+permissions(){
+    # ensure the permissions are set correctly
+    log "Setting data directory permissions."
+
+    # Retrieve PUID and GUID for $APP_USER (e.g., 'node' user)
+    PUID=$(id -u "$APP_USER")  # Get the User ID
+    GUID=$(id -g "$APP_USER")  # Get the Group ID
+
+    log_debug "Setting ownership of $DATA_PATH to ${PUID}:${GUID}."
+
+    chown -R "${PUID}:${GUID}" "$DATA_PATH" "$APP_FILES"
+
+    log_debug "Completed setting directory permissions."
+}
+
+# TODO backup manager / cron
+
+# TODO ENV > JSON writer
