@@ -23,11 +23,9 @@ ENV \
   APP_FILES="/home/$APP_USER/$APP_NAME"
 
 RUN apk --update --no-cache add tzdata &&\
-    mkdir -p $DATA_PATH $APP_FILES
+    mkdir -p $DATA_PATH $APP_FILES $SCRIPTS
 
 USER $APP_USER
-
-RUN mkdir -p $APP_FILES
 
 COPY --chown=$APP_USER:$APP_USER scripts $SCRIPTS
 
