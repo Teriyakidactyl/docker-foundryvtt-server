@@ -19,16 +19,16 @@ USER $APP_USER
 
 ENV \
   APP_NAME="foundryvtt" \
-  APP_ARCHIVE="FoundryVTT-${FOUNDRY_VERSION}.zip" \
+  APP_ARCHIVE="FoundryVTT-$FOUNDRY_VERSION.zip" \
   DATA_PATH="/data" \  
   SCRIPTS="/usr/local/bin" \
   LOGS="/var/log" \
   TERM="xterm-256color"
 
 ENV \
-  APP_FILES="/app/$APP_NAME"
+  APP_FILES="/home/$APP_USER/$APP_NAME"
 
-RUN mkdir -p $APP_FILES 
+RUN mkdir -p $APP_FILES
 
 COPY --chown=$APP_USER:$APP_USER scripts $SCRIPTS
 
