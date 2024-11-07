@@ -56,10 +56,9 @@ jobs:
         with:
           images: ghcr.io/teriyakidactyl/docker-foundryvtt-server
           tags: |
-            ghcr.io/teriyakidactyl/docker-foundryvtt-server:${{ env.FOUNDRY_POINT_VERSION }}
-            ghcr.io/teriyakidactyl/docker-foundryvtt-server:${{ env.FOUNDRY_MAJOR_VERSION }}
-            ghcr.io/teriyakidactyl/docker-foundryvtt-server:latest
-            # Conditionally add _dev for dev branch (without full registry path)
+            ${{ env.FOUNDRY_POINT_VERSION }}
+            ${{ env.FOUNDRY_MAJOR_VERSION }}
+            latest
             ${{ github.ref == 'refs/heads/dev' && format('${{ env.FOUNDRY_POINT_VERSION }}_dev') || '' }}
           labels: |
             org.opencontainers.image.title=Foundry VTT Server
