@@ -16,7 +16,6 @@ jobs:
     name: Build Docker Images
     runs-on: ubuntu-latest
 
-    # NOTE variables here
     env:
       FOUNDRY_POINT_VERSION: "11.315"
       FOUNDRY_MAJOR_VERSION: "11"
@@ -60,12 +59,8 @@ jobs:
             ghcr.io/teriyakidactyl/docker-foundryvtt-server:${{ env.FOUNDRY_POINT_VERSION }}
             ghcr.io/teriyakidactyl/docker-foundryvtt-server:${{ env.FOUNDRY_MAJOR_VERSION }}
             ghcr.io/teriyakidactyl/docker-foundryvtt-server:latest
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,format=long
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            # Conditionally add _dev for dev branch (without full registry path)
+            ${{ github.ref == 'refs/heads/dev' && format('${{ env.FOUNDRY_POINT_VERSION }}_dev') || '' }}
           labels: |
             org.opencontainers.image.title=Foundry VTT Server
             org.opencontainers.image.description=Docker image for Foundry VTT server
