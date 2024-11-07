@@ -58,8 +58,7 @@ jobs:
           tags: |
             ${{ env.FOUNDRY_POINT_VERSION }}
             ${{ env.FOUNDRY_MAJOR_VERSION }}
-            latest
-            ${{ github.ref == 'refs/heads/dev' && format('${{ env.FOUNDRY_POINT_VERSION }}_dev') || '' }}
+            latest            
           labels: |
             org.opencontainers.image.title=Foundry VTT Server
             org.opencontainers.image.description=Docker image for Foundry VTT server
