@@ -4,22 +4,16 @@
 # https://foundryvtt.com/article/requirements/ # --> Node 18 Recommended & glibc 2.28+
 # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md
 
-ARG FOUNDRY_VERSION="11.3.5"
-ARG FOUNDRY_RELEASE_URL
+ARG FOUNDRY_VERSION
 ARG NODE_IMAGE_VERSION="current-alpine"
 
 FROM node:${NODE_IMAGE_VERSION}
 
-RUN apk --update --no-cache add tzdata
-
 ENV \
-  APP_USER="node"
-
-USER $APP_USER
-
-ENV \
+  APP_USER="node" \
   APP_NAME="foundryvtt" \
   APP_ARCHIVE="FoundryVTT-$FOUNDRY_VERSION.zip" \
+  FOUNDRY_RELEASE_URL="" \
   DATA_PATH="/data" \  
   SCRIPTS="/usr/local/bin" \
   LOGS="/var/log" \
@@ -27,6 +21,11 @@ ENV \
 
 ENV \
   APP_FILES="/home/$APP_USER/$APP_NAME"
+
+RUN apk --update --no-cache add tzdata &&\
+    mkdir -p $DATA_PATH $APP_FILES
+
+USER $APP_USER
 
 RUN mkdir -p $APP_FILES
 

@@ -15,6 +15,12 @@ jobs:
   build:
     name: Build Docker Images
     runs-on: ubuntu-latest
+
+    # NOTE variables here
+    env:
+      FOUNDRY_POINT_VERSION: "11.315"
+      FOUNDRY_MAJOR_VERSION: "11"
+
     steps:
       # Check out the repository code
       - name: Check out repository
@@ -31,7 +37,7 @@ jobs:
         uses: actions/cache@v2.1.4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-${{ github.sha }}-${{ env.FOUNDRY_POINT_VERSION }}
           restore-keys: |
             ${{ runner.os }}-buildx-
 
@@ -51,6 +57,9 @@ jobs:
         with:
           images: ghcr.io/teriyakidactyl/docker-foundryvtt-server
           tags: |
+            ghcr.io/teriyakidactyl/docker-foundryvtt-server:${{ env.FOUNDRY_POINT_VERSION }}
+            ghcr.io/teriyakidactyl/docker-foundryvtt-server:${{ env.FOUNDRY_MAJOR_VERSION }}
+            ghcr.io/teriyakidactyl/docker-foundryvtt-server:latest
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
@@ -85,6 +94,7 @@ jobs:
             SOURCE_COMMIT=${{ github.sha }}
             BUILD_DATE=${{ steps.prep.outputs.build_date }}
             BRANCH_NAME=${{ github.ref_name }}
+            FOUNDRY_VERSION=${{ env.FOUNDRY_POINT_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
