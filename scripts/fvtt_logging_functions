@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 # shellcheck disable=SC3010,SC3037
 # SC3010 - busybox supports [[ ]]
 # SC3037 - busybox echo supports flags
