@@ -47,27 +47,25 @@ permissions(){
 update_options_from_env() {
     # Define the path to options.json
     local options_file="${DATA_PATH}/Config/options.json"
-    local tmp_options_file="/tmp/tmp.json"
+
+    # Check if the OPTIONS environment variable is set
+    if [ -z "$OPTIONS" ]; then
+        return 1  # Exit the function with a non-zero status to indicate failure
+    fi
 
     # Check if options.json exists.
     if [ -f "$options_file" ]; then
         # Fetch the OPTIONS environment variable that holds the JSON string
         local options_json="${OPTIONS}"
 
-        # Substitute environment variables in the JSON string
-        # For any placeholder like ${ENV_VAR}, it will be replaced with the actual value from the environment
-        options_json=$(echo "$options_json" | envsubst)
-
-        # Save the updated JSON to the temporary file
-        echo "$options_json" > "$tmp_options_file"
-
-        # Merge the updated JSON into the original options.json file using jq
-        jq -s '.[0] * .[1]' "$options_file" "$tmp_options_file" > "$options_file"
+        # Write the updated JSON directly to options.json
+        echo "$options_json" > "$options_file"
 
         log "Updated $options_file with environment variables."
     else
-        log "Options file $options_file does not exist."
+        log_warn "$options_file does not exist. First Run?"
     fi
 }
+
 
 # TODO Startup Flags
