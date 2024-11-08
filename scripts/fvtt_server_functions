@@ -9,16 +9,16 @@ update_app() {
         log "$APP_FILES/main.mjs does not exist. Downloading the application..."
 
         FILENAME=$(basename "$FOUNDRY_RELEASE_URL")
-
+        
         # Download the Foundry VTT archive
         log "Downloading $FOUNDRY_RELEASE_URL"
-        wget -O $FILENAME "$FOUNDRY_RELEASE_URL"
+        wget -O /tmp/$FILENAME "$FOUNDRY_RELEASE_URL"
 
         # Unzip the resources into $APP_FILES
-        unzip -d $APP_FILES $FILENAME 'resources/*'
+        unzip -d $APP_FILES /tmp/$FILENAME 'resources/*'
 
         # Optionally, you can delete the archive after extraction to save space
-        rm -f $FILENAME
+        rm -f /tmp/$FILENAME
 
         log "Foundry VTT has been updated successfully."
     else

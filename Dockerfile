@@ -11,7 +11,6 @@ FROM node:${NODE_IMAGE_VERSION}
 ENV \
   APP_USER="node" \
   APP_NAME="foundryvtt" \
-  APP_ARCHIVE="FoundryVTT-$FOUNDRY_VERSION.zip" \
   FOUNDRY_RELEASE_URL="" \
   DATA_PATH="/data" \  
   SCRIPTS="/usr/local/bin" \
@@ -22,7 +21,8 @@ ENV \
   APP_FILES="/home/$APP_USER/$APP_NAME"
 
 RUN apk --update --no-cache add tzdata &&\
-    mkdir -p $DATA_PATH $APP_FILES $SCRIPTS
+    mkdir -p $DATA_PATH $APP_FILES $SCRIPTS &&\
+    chown -r $APP_USER:$APP_USER $DATA_PATH $APP_FILES $SCRIPTS
 
 USER $APP_USER
 
