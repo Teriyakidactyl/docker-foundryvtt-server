@@ -8,9 +8,17 @@ update_options_from_env
 
 log "Running on Alpine - Version $(cat /etc/alpine-release)"
 
+log_tails
+
+# https://foundryvtt.com/article/configuration/ > Command Line Flag Listing
 node $APP_FILES/main.mjs \
     --port=30000 \
     --headless \
     --dataPath=$DATA_PATH \
     --noupnp \
-    --noupdate
+    --noipdiscovery \
+    --noupdate \
+    --logsize=1024k \
+    --maxlogs=3 > $LOGS/main_mjs.log 2>&1
+
+# TODO tail $DATA_PATH/Logs/*

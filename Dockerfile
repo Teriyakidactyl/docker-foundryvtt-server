@@ -18,17 +18,20 @@ ENV \
   APP_NAME="foundryvtt" \
   FOUNDRY_RELEASE_URL="" \
   DATA_PATH="/data" \  
-  SCRIPTS="/usr/local/bin" \
-  LOGS="/var/log" \
+  SCRIPTS="/usr/local/bin" \  
   TERM="xterm-256color"
 
 ENV \
+  LOGS="$DATA_PATH/Logs" \
   APP_FILES="/home/$APP_USER/$APP_NAME"
 
 RUN apk --update --no-cache add tzdata jq &&\
     mkdir -p $DATA_PATH $APP_FILES $SCRIPTS &&\
     chown -R $APP_USER:$APP_USER $DATA_PATH $APP_FILES $SCRIPTS &&\
     ln -s $APP_FILES /app
+    # TODO link all log folders to $LOGS in preparation for tailing all of them
+    # TODO ln -s /tmp/logs /var/log
+    # TODO ln -s /tmp/logs /data/Logs (NOTE only .log, as .json has news)
 
 USER $APP_USER
 
