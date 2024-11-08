@@ -51,43 +51,22 @@ update_options_from_env() {
 
     # Check if options.json exists.
     if [ -f "$options_file" ]; then
-        # Iterate over all environment variables starting with OPT_
-        for var in $(env | grep ^OPT_ | cut -d= -f1); do
-            # Extract the key by removing 'OPT_' prefix
-            key="${var#OPT_}"
+        # Fetch the OPTIONS environment variable that holds the JSON string
+        local options_json="${OPTIONS}"
 
-            # Get the value of the environment variable
-            value=$(eval echo \$$var)
+        # Substitute environment variables in the JSON string
+        # For any placeholder like ${ENV_VAR}, it will be replaced with the actual value from the environment
+        options_json=$(echo "$options_json" | envsubst)
 
-            # Check if the value is boolean, null, or integer to convert properly
-            case "$value" in
-                "true")
-                    jq --arg key "$key" --argjson value true \
-                        '.[$key] = $value' "$options_file" > $tmp_options_file && mv $tmp_options_file "$options_file"
-                    ;;
-                "false")
-                    jq --arg key "$key" --argjson value false \
-                        '.[$key] = $value' "$options_file" > $tmp_options_file && mv $tmp_options_file "$options_file"
-                    ;;
-                "null")
-                    jq --arg key "$key" '.[$key] = null' "$options_file" > $tmp_options_file && mv $tmp_options_file "$options_file"
-                    ;;
-                *)
-                    # If it's an integer or string, use jq to update the field
-                    if echo "$value" | grep -q '^[0-9]\+$'; then
-                        jq --arg key "$key" --argjson value "$value" \
-                            '.[$key] = $value' "$options_file" > $tmp_options_file && mv $tmp_options_file "$options_file"
-                    else
-                        jq --arg key "$key" --arg value "$value" \
-                            '.[$key] = $value' "$options_file" > $tmp_options_file && mv $tmp_options_file "$options_file"
-                    fi
-                    ;;
-            esac
-        done
+        # Save the updated JSON to the temporary file
+        echo "$options_json" > "$tmp_options_file"
+
+        # Merge the updated JSON into the original options.json file using jq
+        jq -s '.[0] * .[1]' "$options_file" "$tmp_options_file" > "$options_file"
 
         log "Updated $options_file with environment variables."
     else
-        log_warn "Warning: $options_file not found. First Run?"
+        log "Options file $options_file does not exist."
     fi
 }
 

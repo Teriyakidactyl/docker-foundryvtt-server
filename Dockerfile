@@ -4,6 +4,11 @@
 # https://foundryvtt.com/article/requirements/ # --> Node 18 Recommended & glibc 2.28+
 # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md
 
+# Resource compare: 11/8/2024
+# NAME             CPU %     MEM USAGE / LIMIT     MEM %     NET I/O          BLOCK I/O        PIDS
+# FoundryVTT_Feld  0.00%     157MiB / 955.1MiB     16.44%    236MB / 1.27MB   215MB / 504MB    12
+# FoundryVTT_This  0.00%     63.86MiB / 955.1MiB   6.69%     138kB / 2.56MB   1.35MB / 348kB   12
+
 ARG NODE_IMAGE_VERSION
 
 FROM node:${NODE_IMAGE_VERSION}
