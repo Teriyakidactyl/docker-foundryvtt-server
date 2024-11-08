@@ -30,12 +30,9 @@ log_error() {
 }
 
 log_tails() {
-
-    # Define the log files to monitor
-    local LOG_FILES=($(find "$LOGS" -type f \( -name "*.log" -o -name "*log.txt" \)))
-
-    # Tail each log file and process each line
-    for file in "${LOG_FILES[@]}"; do
+  
+    # Find log files and tail them
+    find "$LOGS" -type f \( -name "*.log" -o -name "*log.txt" \) | while IFS= read -r file; do
         # Check if the file exists and is readable
         if [ -f "$file" ] && [ -r "$file" ]; then
             # Use tail and while loop to process each line
@@ -47,5 +44,4 @@ log_tails() {
             log "File '$file' does not exist or is not readable." "common/monitor_logs"
         fi
     done
-
 }
