@@ -85,7 +85,7 @@ jobs:
             SOURCE_COMMIT=${{ github.sha }}
             BUILD_DATE=${{ steps.prep.outputs.build_date }}
             BRANCH_NAME=${{ github.ref_name }}
-            FOUNDRY_VERSION=${{ env.NODE_IMAGE_VERSION }}
+            NODE_IMAGE_VERSION=${{ env.NODE_IMAGE_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
