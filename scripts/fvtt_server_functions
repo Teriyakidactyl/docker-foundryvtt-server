@@ -4,6 +4,7 @@
 # TODO package manager, Example (dead): https://github.com/cswendrowski/foundryget
 
 update_app() {
+    LOG_NAME="fvtt_server_functions, update_app()"
     # Check if $APP_FILES/main.mjs exists
     if [ ! -f "$APP_FILES/main.mjs" ]; then
         log "$APP_FILES/main.mjs does not exist."
@@ -28,6 +29,7 @@ update_app() {
 }
 
 permissions(){
+    LOG_NAME="fvtt_server_functions, permissions()"
     # ensure the permissions are set correctly
     log "Setting data directory permissions."
 
@@ -45,6 +47,7 @@ permissions(){
 # TODO backup manager / cron
 
 update_options_from_env() {
+    LOG_NAME="fvtt_server_functions, update_options_from_env()"
     # NOTE This is all or nothing. If OPTIONS is present, full config will be overwritten
 
     # Define the path to options.json

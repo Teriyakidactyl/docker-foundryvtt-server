@@ -6,6 +6,7 @@ update_app
 # permissions
 update_options_from_env
 
+LOG_NAME="fvtt_up.sh"
 log "Running on Alpine - Version $(cat /etc/alpine-release)"
 
 # log_tails
