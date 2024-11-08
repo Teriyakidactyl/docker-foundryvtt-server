@@ -1,7 +1,7 @@
 
 # Docker Foundry VTT Server Image
 
-This Docker image provides a Foundry Virtual Tabletop (Foundry VTT) dedicated server, supporting both **`amd64`** and **`arm64`** (x86, arm) architectures.
+This Docker image provides a Foundry Virtual Tabletop (Foundry VTT) dedicated server, supporting both **`amd64`** and **`arm64`** architectures. Builds generally follow node releases, not Foundry VTT. 
 
 ![Foundry VTT Logo](/images/fvtt_teriyaki.png)
 
