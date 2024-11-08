@@ -11,4 +11,4 @@ node $APP_FILES/main.mjs \
     --headless \
     --dataPath=$DATA_PATH \
     --noupnp \
-    --noupdate &
+    --noupdate
