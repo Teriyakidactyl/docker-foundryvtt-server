@@ -30,7 +30,6 @@ log_error() {
 }
 
 log_tails() {
-  
     # Find log files and tail them
     find "$LOGS" -type f \( -name "*.log" -o -name "*log.txt" \) | while IFS= read -r file; do
         # Check if the file exists and is readable
@@ -39,9 +38,11 @@ log_tails() {
             tail -f "$file" | while IFS= read -r line; do
                 log "$line" "$(basename "$file")"
             done &
-            export tail_pids+=($!)
+            # Capture the tail process PID
+            tail_pids="$tail_pids $!"
         else
             log "File '$file' does not exist or is not readable." "common/monitor_logs"
         fi
     done
 }
+
