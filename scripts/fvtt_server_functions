@@ -47,6 +47,7 @@ permissions(){
 update_options_from_env() {
     # Define the path to options.json
     local options_file="${DATA_PATH}/Config/options.json"
+    local tmp_options_file="/tmp/tmp.json"
 
     # Check if options.json exists.
     if [ -f "$options_file" ]; then
@@ -62,23 +63,23 @@ update_options_from_env() {
             case "$value" in
                 "true")
                     jq --arg key "$key" --argjson value true \
-                        '.[$key] = $value' "$options_file" > tmp.json && mv tmp.json "$options_file"
+                        '.[$key] = $value' "$options_file" > $tmp_options_file && mv $tmp_options_file "$options_file"
                     ;;
                 "false")
                     jq --arg key "$key" --argjson value false \
-                        '.[$key] = $value' "$options_file" > tmp.json && mv tmp.json "$options_file"
+                        '.[$key] = $value' "$options_file" > $tmp_options_file && mv $tmp_options_file "$options_file"
                     ;;
                 "null")
-                    jq --arg key "$key" '.[$key] = null' "$options_file" > tmp.json && mv tmp.json "$options_file"
+                    jq --arg key "$key" '.[$key] = null' "$options_file" > $tmp_options_file && mv $tmp_options_file "$options_file"
                     ;;
                 *)
                     # If it's an integer or string, use jq to update the field
                     if echo "$value" | grep -q '^[0-9]\+$'; then
                         jq --arg key "$key" --argjson value "$value" \
-                            '.[$key] = $value' "$options_file" > tmp.json && mv tmp.json "$options_file"
+                            '.[$key] = $value' "$options_file" > $tmp_options_file && mv $tmp_options_file "$options_file"
                     else
                         jq --arg key "$key" --arg value "$value" \
-                            '.[$key] = $value' "$options_file" > tmp.json && mv tmp.json "$options_file"
+                            '.[$key] = $value' "$options_file" > $tmp_options_file && mv $tmp_options_file "$options_file"
                     fi
                     ;;
             esac
