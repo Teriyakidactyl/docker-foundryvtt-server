@@ -15,7 +15,7 @@ This Docker image provides a Foundry Virtual Tabletop (Foundry VTT) dedicated se
 Configure your Foundry VTT server using the following environment variables:
 
 - `NODE_IMAGE_VERSION`: The version of the Node.js Docker image to use as the base (default: `latest`). Generally follows [these tags](https://hub.docker.com/_/node).
-- `FOUNDRY_RELEASE_URL`: The URL to the Foundry VTT release package (default: empty, latest version will be used).
+- `FOUNDRY_RELEASE_URL`: The URL to the Foundry VTT release package (default: empty, latest version will be used). Relies on the [Timed Link](https://foundryvtt.com/article/installation/) concept of install.
 - `DATA_PATH`: The path to store your Foundry VTT data (default: `/data`).
 
 ## Usage

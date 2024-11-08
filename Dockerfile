@@ -20,7 +20,7 @@ ENV \
 ENV \
   APP_FILES="/home/$APP_USER/$APP_NAME"
 
-RUN apk --update --no-cache add tzdata &&\
+RUN apk --update --no-cache add tzdata jq &&\
     mkdir -p $DATA_PATH $APP_FILES $SCRIPTS &&\
     chown -R $APP_USER:$APP_USER $DATA_PATH $APP_FILES $SCRIPTS &&\
     ln -s $APP_FILES /app
