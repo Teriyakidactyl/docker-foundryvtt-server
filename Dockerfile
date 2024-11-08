@@ -22,7 +22,8 @@ ENV \
 
 RUN apk --update --no-cache add tzdata &&\
     mkdir -p $DATA_PATH $APP_FILES $SCRIPTS &&\
-    chown -R $APP_USER:$APP_USER $DATA_PATH $APP_FILES $SCRIPTS
+    chown -R $APP_USER:$APP_USER $DATA_PATH $APP_FILES $SCRIPTS &&\
+    ln -s $APP_FILES /app
 
 USER $APP_USER
 

@@ -42,8 +42,6 @@ permissions(){
     log_debug "Completed setting directory permissions."
 }
 
-
-
 # TODO backup manager / cron
 
 # TODO ENV > JSON writer
