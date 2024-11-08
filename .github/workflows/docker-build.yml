@@ -57,8 +57,8 @@ jobs:
         with:
           images: ghcr.io/teriyakidactyl/docker-foundryvtt-server
           tags: |
-            ${{ env.NODE_IMAGE_VERSION }}
-            latest            
+            ${{ github.ref == 'refs/heads/dev' && format('{0}_dev', env.NODE_IMAGE_VERSION) || env.NODE_IMAGE_VERSION }}
+            ${{ github.ref == 'refs/heads/dev' && 'latest_dev' || 'latest' }} 
           labels: |
             org.opencontainers.image.title=Foundry VTT Server
             org.opencontainers.image.description=Docker image for Foundry VTT server

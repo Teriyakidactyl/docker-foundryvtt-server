@@ -45,6 +45,8 @@ permissions(){
 # TODO backup manager / cron
 
 update_options_from_env() {
+    # NOTE This is all or nothing. If OPTIONS is present, full config will be overwritten
+
     # Define the path to options.json
     local options_file="${DATA_PATH}/Config/options.json"
 
@@ -67,5 +69,8 @@ update_options_from_env() {
     fi
 }
 
+# TODO admin password
+
+# TODO license key
 
 # TODO Startup Flags
