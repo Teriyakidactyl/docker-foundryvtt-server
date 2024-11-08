@@ -4,8 +4,7 @@
 # https://foundryvtt.com/article/requirements/ # --> Node 18 Recommended & glibc 2.28+
 # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md
 
-ARG FOUNDRY_VERSION
-ARG NODE_IMAGE_VERSION="current-alpine"
+ARG NODE_IMAGE_VERSION
 
 FROM node:${NODE_IMAGE_VERSION}
 

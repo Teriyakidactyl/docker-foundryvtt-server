@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NODE_IMAGE_VERSION: "23-alpine3.19"
+      NODE_IMAGE_VERSION: "23-alpine3.20"
 
     steps:
       # Check out the repository code
