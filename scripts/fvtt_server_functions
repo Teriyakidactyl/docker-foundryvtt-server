@@ -15,10 +15,11 @@ update_app() {
         wget -O /tmp/$FILENAME "$FOUNDRY_RELEASE_URL"
 
         # Unzip the resources into $APP_FILES
-        unzip -d $APP_FILES /tmp/$FILENAME 'resources/*'
+        unzip /tmp/$FILENAME 'resources/app/*' -d /tmp/fvtt
+        cp -r /tmp/fvtt/resources/app/* $APP_FILES
 
         # Optionally, you can delete the archive after extraction to save space
-        rm -f /tmp/$FILENAME
+        rm -rf /tmp/$FILENAME /tmp/fvtt
 
         log "Foundry VTT has been updated successfully."
     else
@@ -40,6 +41,8 @@ permissions(){
 
     log_debug "Completed setting directory permissions."
 }
+
+
 
 # TODO backup manager / cron
 
