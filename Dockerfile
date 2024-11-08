@@ -4,31 +4,36 @@
 # https://foundryvtt.com/article/requirements/ # --> Node 18 Recommended & glibc 2.28+
 # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md
 
-ARG FOUNDRY_VERSION="11.3.5"
-ARG FOUNDRY_RELEASE_URL
-ARG NODE_IMAGE_VERSION="current-alpine"
+# Resource compare: 11/8/2024
+# NAME             CPU %     MEM USAGE / LIMIT     MEM %     NET I/O          BLOCK I/O        PIDS
+# FoundryVTT_Feld  0.00%     157MiB / 955.1MiB     16.44%    236MB / 1.27MB   215MB / 504MB    12
+# FoundryVTT_This  0.00%     63.86MiB / 955.1MiB   6.69%     138kB / 2.56MB   1.35MB / 348kB   12
+
+ARG NODE_IMAGE_VERSION
 
 FROM node:${NODE_IMAGE_VERSION}
 
-RUN apk --update --no-cache add tzdata
-
 ENV \
-  APP_USER="node"
-
-USER $APP_USER
-
-ENV \
+  APP_USER="node" \
   APP_NAME="foundryvtt" \
-  APP_ARCHIVE="FoundryVTT-${FOUNDRY_VERSION}.zip" \
+  FOUNDRY_RELEASE_URL="" \
   DATA_PATH="/data" \  
-  SCRIPTS="/usr/local/bin" \
-  LOGS="/var/log" \
+  SCRIPTS="/usr/local/bin" \  
   TERM="xterm-256color"
 
 ENV \
-  APP_FILES="/app/$APP_NAME"
+  LOGS="$DATA_PATH/Logs" \
+  APP_FILES="/home/$APP_USER/$APP_NAME"
 
-RUN mkdir -p $APP_FILES 
+RUN apk --update --no-cache add tzdata jq &&\
+    mkdir -p $DATA_PATH $APP_FILES $SCRIPTS &&\
+    chown -R $APP_USER:$APP_USER $DATA_PATH $APP_FILES $SCRIPTS &&\
+    ln -s $APP_FILES /app
+    # TODO link all log folders to $LOGS in preparation for tailing all of them
+    # TODO ln -s /tmp/logs /var/log
+    # TODO ln -s /tmp/logs /data/Logs (NOTE only .log, as .json has news)
+
+USER $APP_USER
 
 COPY --chown=$APP_USER:$APP_USER scripts $SCRIPTS
 
@@ -36,6 +41,5 @@ EXPOSE 30000/TCP
 
 VOLUME ["$DATA_PATH"]
 
-ENTRYPOINT ["$SCRIPTS/fvtt_up.sh"] 
-
-CMD ["node", "$APP_FILES/main.mjs", "--port=30000", "--headless", "--dataPath=$DATA_PATH", "--noupnp", "--noupdate"]
+ENTRYPOINT ["/bin/ash", "-c"]
+CMD ["$SCRIPTS/fvtt_up.sh"]

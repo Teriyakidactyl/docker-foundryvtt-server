@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 # shellcheck disable=SC3010,SC3037
 # SC3010 - busybox supports [[ ]]
 # SC3037 - busybox echo supports flags
@@ -28,3 +28,22 @@ log_warn() {
 log_error() {
   echo -e "${LOG_NAME} | $(date +%Y-%m-%d\ %H:%M:%S) | [${RED}error${RESET}] $*"
 }
+
+log_tails() {
+    # Find log files and tail them
+    find "$LOGS" -type f \( -name "*.log" -o -name "*log.txt" \) | while IFS= read -r file; do
+        # Check if the file exists and is readable
+        if [ -f "$file" ] && [ -r "$file" ]; then
+            # TODO jq tail -f $LOGS/debug*.log | jq -r 'select(.level == "info") | .timestamp + " - [" + .level + "] - " + .message'
+            # Use tail and while loop to process each line
+            tail -f "$file" | while IFS= read -r line; do
+                echo "$line" | jq "$(basename "$file")"
+            done &
+            # Capture the tail process PID
+            tail_pids="$tail_pids $!"
+        else
+            log "File '$file' does not exist or is not readable." "common/monitor_logs"
+        fi
+    done
+}
+

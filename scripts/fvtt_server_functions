@@ -4,26 +4,32 @@
 # TODO package manager, Example (dead): https://github.com/cswendrowski/foundryget
 
 update_app() {
+    LOG_NAME="fvtt_server_functions, update_app()"
     # Check if $APP_FILES/main.mjs exists
     if [ ! -f "$APP_FILES/main.mjs" ]; then
-        log "$APP_FILES/main.mjs does not exist. Downloading the application..."
+        log "$APP_FILES/main.mjs does not exist."
 
+        FILENAME=$(basename "$FOUNDRY_RELEASE_URL")
+        
         # Download the Foundry VTT archive
-        wget -O $APP_ARCHIVE "${FOUNDRY_RELEASE_URL}"
+        log "Downloading $FOUNDRY_RELEASE_URL"
+        wget -O /tmp/$FILENAME "$FOUNDRY_RELEASE_URL"
 
         # Unzip the resources into $APP_FILES
-        unzip -d $APP_FILES $APP_ARCHIVE 'resources/*'
+        unzip /tmp/$FILENAME 'resources/app/*' -d /tmp/fvtt
+        cp -r /tmp/fvtt/resources/app/* $APP_FILES
 
         # Optionally, you can delete the archive after extraction to save space
-        rm -f $APP_ARCHIVE
+        rm -rf /tmp/$FILENAME /tmp/fvtt
 
         log "Foundry VTT has been updated successfully."
     else
-        log "$APP_FILES/main.mjs already exists. Skipping download."
+        log "Application present."
     fi
 }
 
 permissions(){
+    LOG_NAME="fvtt_server_functions, permissions()"
     # ensure the permissions are set correctly
     log "Setting data directory permissions."
 
@@ -40,4 +46,34 @@ permissions(){
 
 # TODO backup manager / cron
 
-# TODO ENV > JSON writer
+update_options_from_env() {
+    LOG_NAME="fvtt_server_functions, update_options_from_env()"
+    # NOTE This is all or nothing. If OPTIONS is present, full config will be overwritten
+
+    # Define the path to options.json
+    local options_file="${DATA_PATH}/Config/options.json"
+
+    # Check if the OPTIONS environment variable is set
+    if [ -z "$OPTIONS" ]; then
+        return 1  # Exit the function with a non-zero status to indicate failure
+    fi
+
+    # Check if options.json exists.
+    if [ -f "$options_file" ]; then
+        # Fetch the OPTIONS environment variable that holds the JSON string
+        local options_json="${OPTIONS}"
+
+        # Write the updated JSON directly to options.json
+        echo "$options_json" > "$options_file"
+
+        log "Updated $options_file with environment variables."
+    else
+        log_warn "$options_file does not exist. First Run?"
+    fi
+}
+
+# TODO admin password @ /data/Config/admin.txt
+
+# TODO license key
+
+# TODO Startup Flags

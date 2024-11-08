@@ -15,17 +15,29 @@ jobs:
   build:
     name: Build Docker Images
     runs-on: ubuntu-latest
+
+    env:
+      # Relases: https://nodejs.org/en/about/previous-releases
+      # Docker: https://hub.docker.com/_/node
+      NODE_IMAGE_VERSION: "23.1-alpine3.20"
+
     steps:
       # Check out the repository code
       - name: Check out repository
         uses: actions/checkout@v2
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          install: true
 
       # Cache Docker layers to speed up subsequent builds
       - name: Cache Docker layers
         uses: actions/cache@v2.1.4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-${{ github.sha }}-${{ env.FOUNDRY_POINT_VERSION }}
           restore-keys: |
             ${{ runner.os }}-buildx-
 
@@ -45,20 +57,16 @@ jobs:
         with:
           images: ghcr.io/teriyakidactyl/docker-foundryvtt-server
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,format=long
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            ${{ github.ref == 'refs/heads/dev' && format('{0}_dev', env.NODE_IMAGE_VERSION) || env.NODE_IMAGE_VERSION }}
+            ${{ github.ref == 'refs/heads/dev' && 'latest_dev' || 'latest' }} 
           labels: |
             org.opencontainers.image.title=Foundry VTT Server
             org.opencontainers.image.description=Docker image for Foundry VTT server
             org.opencontainers.image.vendor=TeriyakiDactyl
-            org.opencontainers.image.version={{version}}
-            org.opencontainers.image.created={{date 'yyyy-MM-dd'}}
-            org.opencontainers.image.revision={{sha}}
-            com.example.git.branch={{branch}}
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.created=${{ steps.prep.outputs.build_date }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            com.example.git.branch=${{ github.ref_name }}
 
       # Prepare additional build arguments
       - name: Prepare build arguments
@@ -72,18 +80,14 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}  # Only push on non-PR events
-          tags: ${{ steps.meta.outputs.tags }}  # Use generated tags
-          labels: ${{ steps.meta.outputs.labels }}  # Use generated labels
-          build-args: |  # Pass build arguments to Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
             SOURCE_COMMIT=${{ github.sha }}
             BUILD_DATE=${{ steps.prep.outputs.build_date }}
             BRANCH_NAME=${{ github.ref_name }}
-          cache-from: type=local,src=/tmp/.buildx-cache  # Use cached layers
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max  # Update cache
-
-      # Move cache (Temporary fix for cache handling)
-      - name: Move cache (Temporary fix)
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+            NODE_IMAGE_VERSION=${{ env.NODE_IMAGE_VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
