@@ -77,8 +77,7 @@ build_foundry_flags() {
     [ "${FOUNDRY_NO_BACKUPS:-false}" = "true" ] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --noBackups"
     
     # Log each flag separately
-    IFS=' ' read -r -a flags_array <<< "$FOUNDRY_FLAGS"
-    for flag in "${flags_array[@]}"; do
+    for flag in $FOUNDRY_FLAGS; do
         log "$flag"
     done
 }
