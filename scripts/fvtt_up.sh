@@ -70,11 +70,11 @@ build_foundry_flags() {
     [ -n "$FOUNDRY_PASSWORD_SALT" ] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --passwordSalt \"$FOUNDRY_PASSWORD_SALT\""
     [ -n "$FOUNDRY_UPNP_LEASE_DURATION" ] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --upnpLeaseDuration $FOUNDRY_UPNP_LEASE_DURATION"
     
-    # Boolean flags with more robust truthy checks
-    [[ "$FOUNDRY_COMPRESS_STATIC" =~ ^(true|1|yes)$ ]] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --compressStatic"
-    [[ "$FOUNDRY_COMPRESS_SOCKET" =~ ^(true|1|yes)$ ]] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --compressSocket"
-    [[ "$FOUNDRY_FULL_SCREEN" =~ ^(true|1|yes)$ ]] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --fullscreen"
-    [[ "$FOUNDRY_NO_BACKUPS" =~ ^(true|1|yes)$ ]] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --noBackups"
+    # Boolean flags
+    [ "${FOUNDRY_COMPRESS_STATIC:-true}" = "true" ] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --compressStatic"
+    [ "${FOUNDRY_COMPRESS_SOCKET:-true}" = "true" ] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --compressSocket"
+    [ "${FOUNDRY_FULL_SCREEN:-false}" = "true" ] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --fullscreen"
+    [ "${FOUNDRY_NO_BACKUPS:-false}" = "true" ] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --noBackups"
     
     # Log each flag separately
     IFS=' ' read -r -a flags_array <<< "$FOUNDRY_FLAGS"
