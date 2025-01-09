@@ -77,6 +77,7 @@ build_foundry_flags() {
     [ "${FOUNDRY_NO_BACKUPS:-false}" = "true" ] && FOUNDRY_FLAGS="$FOUNDRY_FLAGS --noBackups"
     
     # Log each flag separately
+    log "Starting Foundry VTT with flags:"
     for flag in $FOUNDRY_FLAGS; do
         log "$flag"
     done
