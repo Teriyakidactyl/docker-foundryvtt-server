@@ -56,18 +56,18 @@ build_foundry_flags() {
     FLAGS="--headless --dataPath=\"$DATA_PATH\" --noupnp --noipdiscovery --noupdate --logsize=1024k --maxlogs=1"
     
     # Add port if specified, otherwise use default
-    FLAGS="$FLAGS --port=\"${FOUNDRY_PORT:-30000}\""
+    FLAGS="$FLAGS --port=${FOUNDRY_PORT:-30000}"
     
     # Optional flags based on environment variables
     [ -n "$FOUNDRY_ADMIN_PASSWORD" ] && FLAGS="$FLAGS --adminPassword \"$FOUNDRY_ADMIN_PASSWORD\""
     [ -n "$FOUNDRY_SSL_CERT" ] && FLAGS="$FLAGS --sslCert \"$FOUNDRY_SSL_CERT\""
     [ -n "$FOUNDRY_SSL_KEY" ] && FLAGS="$FLAGS --sslKey \"$FOUNDRY_SSL_KEY\""
     [ -n "$FOUNDRY_WORLD" ] && FLAGS="$FLAGS --world \"$FOUNDRY_WORLD\""
-    [ -n "$FOUNDRY_PROXY_PORT" ] && FLAGS="$FLAGS --proxyPort \"$FOUNDRY_PROXY_PORT\""
+    [ -n "$FOUNDRY_PROXY_PORT" ] && FLAGS="$FLAGS --proxyPort $FOUNDRY_PROXY_PORT"
     [ -n "$FOUNDRY_PROXY_SSL" ] && FLAGS="$FLAGS --proxySSL \"$FOUNDRY_PROXY_SSL\""
     [ -n "$FOUNDRY_ROUTE_PREFIX" ] && FLAGS="$FLAGS --routePrefix \"$FOUNDRY_ROUTE_PREFIX\""
     [ -n "$FOUNDRY_PASSWORD_SALT" ] && FLAGS="$FLAGS --passwordSalt \"$FOUNDRY_PASSWORD_SALT\""
-    [ -n "$FOUNDRY_UPNP_LEASE_DURATION" ] && FLAGS="$FLAGS --upnpLeaseDuration \"$FOUNDRY_UPNP_LEASE_DURATION\""
+    [ -n "$FOUNDRY_UPNP_LEASE_DURATION" ] && FLAGS="$FLAGS --upnpLeaseDuration $FOUNDRY_UPNP_LEASE_DURATION"
     
     # Boolean flags
     [ "${FOUNDRY_COMPRESS_STATIC:-true}" = "true" ] && FLAGS="$FLAGS --compressStatic"
