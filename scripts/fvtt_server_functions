@@ -48,7 +48,9 @@ permissions(){
 
 update_options_from_env() {
     LOG_NAME="fvtt_server_functions, update_options_from_env()"
+
     # NOTE This is all or nothing. If OPTIONS is present, full config will be overwritten
+    # TODO make this not all or nothing, compare options file to ENV. Only overwrite ENV provided options.
 
     # Define the path to options.json
     local options_file="${DATA_PATH}/Config/options.json"

@@ -39,6 +39,40 @@ Configure your Foundry VTT server using the following environment variables:
    ghcr.io/teriyakidactyl/docker-foundry-vtt-server:latest
    ```
 
+   ```yml
+      FOUNDRY_RELEASE_URL: "https://mirror.$DOMAIN/fvtt/FoundryVTT-${FVTT_VERSION}.zip"
+
+      # options.json settings: https://foundryvtt.com/article/configuration/
+      OPTIONS: >
+        {
+          "adminPassword": null,
+          "awsConfig": null,
+          "compressSocket": true,
+          "compressStatic": true,
+          "cssTheme": "foundry",
+          "deleteNEDB": false,
+          "fullscreen": false,
+          "hostname": "${container_display_name}.${DOMAIN}",
+          "hotReload": false,
+          "language": "en.core",
+          "localHostname": "${HOSTNAME}:30000,
+          "noBackups": true,
+          "port": 30000,
+          "protocol": null,
+          "proxyPort": 443,
+          "proxySSL": true,
+          "routePrefix": null,
+          "serviceConfig": null,
+          "sslCert": null,
+          "sslKey": null,
+          "telemetry": false,
+          "updateChannel": "stable",
+          "upnp": false,
+          "upnpLeaseDuration": null,
+          "world": "${FVTT_GROUP}"
+        }
+   ```
+
    Replace `FVTT_DATA_PATH="/path/to/your/fvtt/data"` with the path where you want to store your Foundry VTT data.
 
 ## Building the Image

@@ -9,6 +9,8 @@ update_options_from_env
 LOG_NAME="fvtt_up.sh"
 log "Running on Alpine - Version $(cat /etc/alpine-release)"
 
+# TODO search for unsafe shutdown via 'options.json.lock' @ $DATA_PATH/Config/options.json.lock (folder)
+
 # log_tails
 # FIXME tail won't pickup new logs until reboot
 # tail -f $LOGS/debug*.log | jq --color-output -r 'select(.level == "info") | .timestamp + " - [" + .level + "] - " + .message'
