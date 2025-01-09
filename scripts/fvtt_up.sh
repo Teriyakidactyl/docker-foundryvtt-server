@@ -48,6 +48,36 @@ check_lock() {
     fi
 }
 
+# Function to build Foundry command line flags
+build_foundry_flags() {
+    local FLAGS=""
+    
+    # Base flags that are always included
+    FLAGS="--headless --dataPath=$DATA_PATH --noupnp --noipdiscovery --noupdate --logsize=1024k --maxlogs=1"
+    
+    # Add port if specified, otherwise use default
+    FLAGS="$FLAGS --port=${FOUNDRY_PORT:-30000}"
+    
+    # Optional flags based on environment variables
+    [ -n "$FOUNDRY_ADMIN_PASSWORD" ] && FLAGS="$FLAGS --adminPassword $FOUNDRY_ADMIN_PASSWORD"
+    [ -n "$FOUNDRY_SSL_CERT" ] && FLAGS="$FLAGS --sslCert $FOUNDRY_SSL_CERT"
+    [ -n "$FOUNDRY_SSL_KEY" ] && FLAGS="$FLAGS --sslKey $FOUNDRY_SSL_KEY"
+    [ -n "$FOUNDRY_WORLD" ] && FLAGS="$FLAGS --world $FOUNDRY_WORLD"
+    [ -n "$FOUNDRY_PROXY_PORT" ] && FLAGS="$FLAGS --proxyPort $FOUNDRY_PROXY_PORT"
+    [ -n "$FOUNDRY_PROXY_SSL" ] && FLAGS="$FLAGS --proxySSL $FOUNDRY_PROXY_SSL"
+    [ -n "$FOUNDRY_ROUTE_PREFIX" ] && FLAGS="$FLAGS --routePrefix $FOUNDRY_ROUTE_PREFIX"
+    [ -n "$FOUNDRY_PASSWORD_SALT" ] && FLAGS="$FLAGS --passwordSalt $FOUNDRY_PASSWORD_SALT"
+    [ -n "$FOUNDRY_UPNP_LEASE_DURATION" ] && FLAGS="$FLAGS --upnpLeaseDuration $FOUNDRY_UPNP_LEASE_DURATION"
+    
+    # Boolean flags
+    [ "${FOUNDRY_COMPRESS_STATIC:-true}" = "true" ] && FLAGS="$FLAGS --compressStatic"
+    [ "${FOUNDRY_COMPRESS_SOCKET:-true}" = "true" ] && FLAGS="$FLAGS --compressSocket"
+    [ "${FOUNDRY_FULL_SCREEN:-false}" = "true" ] && FLAGS="$FLAGS --fullscreen"
+    [ "${FOUNDRY_NO_BACKUPS:-false}" = "true" ] && FLAGS="$FLAGS --noBackups"
+    
+    echo "$FLAGS"
+}
+
 # Set up signal trap with signal logging
 trap 'log "Received signal: $?" && cleanup' SIGTERM SIGINT SIGQUIT
 
@@ -58,21 +88,12 @@ check_lock
 update_app
 update_options_from_env
 
-# log_tails
-# FIXME tail won't pickup new logs until reboot
-# tail -f $LOGS/debug*.log | jq --color-output -r 'select(.level == "info") | .timestamp + " - [" + .level + "] - " + .message'
-# tail -f $LOGS/error*.log | jq --color-output -r 'select(.level == "info") | .timestamp + " - [" + .level + "] - " + .message'
+# Build command line flags
+FOUNDRY_FLAGS=$(build_foundry_flags)
+log "Starting Foundry VTT with flags: $FOUNDRY_FLAGS"
 
 # Start Foundry VTT in the background
-node $APP_FILES/main.mjs \
-    --port=30000 \
-    --headless \
-    --dataPath=$DATA_PATH \
-    --noupnp \
-    --noipdiscovery \
-    --noupdate \
-    --logsize=1024k \
-    --maxlogs=1 &
+node $APP_FILES/main.mjs $FOUNDRY_FLAGS &
 
 # Store the PID
 FOUNDRY_PID=$!
