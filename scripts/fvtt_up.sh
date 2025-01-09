@@ -79,6 +79,9 @@ build_foundry_flags() {
     # Log each flag separately
     log "Starting Foundry VTT with flags:"
     for flag in $FOUNDRY_FLAGS; do
+        if echo "$flag" | grep -iq "password"; then
+            flag=$(echo "$flag" | sed 's/=\(.*\)/=\*/')
+        fi
         log "$flag"
     done
 }
