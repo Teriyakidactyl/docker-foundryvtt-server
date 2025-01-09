@@ -2,20 +2,25 @@
 source $SCRIPTS/fvtt_logging_functions
 source $SCRIPTS/fvtt_server_functions
 
-update_app
-# permissions
-update_options_from_env
-
 LOG_NAME="fvtt_up.sh"
 log "Running on Alpine - Version $(cat /etc/alpine-release)"
 
-# Check for unsafe shutdown via 'options.json.lock' directory
-LOCK_DIR="$DATA_PATH/Config/options.json.lock"
-if [ -d "$LOCK_DIR" ]; then
-    log_error "Detected an unsafe shutdown. The lock directory '$LOCK_DIR' exists."
-    # Optionally remove the lock directory to clean up (comment out if not needed)
-    # rm -rf "$LOCK_DIR"
-fi
+# Function to check and clean up the lock directory
+check_lock() {
+    LOCK_DIR="$DATA_PATH/Config/options.json.lock"
+    if [ -d "$LOCK_DIR" ]; then
+        log_error "Detected an unsafe shutdown. The lock directory '$LOCK_DIR' exists."
+        # Optionally remove the lock directory to clean up (comment out if not needed)
+        # rm -rf "$LOCK_DIR"
+    fi
+}
+
+# Initial lock check
+check_lock
+
+# Perform application update and environment option update
+update_app
+update_options_from_env
 
 # log_tails
 # FIXME tail won't pickup new logs until reboot
@@ -35,3 +40,9 @@ node $APP_FILES/main.mjs \
 
     # > $LOGS/main_mjs.$(date +"%Y-%m-%d").log 2>&1
     # NOTE $LOGS/debug.*.log already contains output
+
+# Check lock directory again after FoundryVTT process finishes
+check_lock
+
+# Final log entry after the process exits
+log "FoundryVTT process has exited. Container will now stop."

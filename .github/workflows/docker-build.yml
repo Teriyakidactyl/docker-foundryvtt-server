@@ -19,6 +19,7 @@ jobs:
     env:
       # Relases: https://nodejs.org/en/about/previous-releases
       # Docker: https://hub.docker.com/_/node
+      # TODO move to bookworm-slim
       NODE_IMAGE_VERSION: "23.6-alpine3.21"
 
     steps:
