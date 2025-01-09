@@ -2,6 +2,8 @@
 source $SCRIPTS/fvtt_logging_functions
 source $SCRIPTS/fvtt_server_functions
 
+# Store the Foundry VTT process ID
+FOUNDRY_PID=""
 LOG_NAME="fvtt_up.sh"
 log "Running on Alpine - Version $(cat /etc/alpine-release)"
 
@@ -14,6 +16,9 @@ check_lock() {
         # rm -rf "$LOCK_DIR"
     fi
 }
+
+# Set up signal traps
+trap cleanup SIGTERM SIGINT SIGQUIT
 
 # Initial lock check
 check_lock
@@ -41,8 +46,11 @@ node $APP_FILES/main.mjs \
     # > $LOGS/main_mjs.$(date +"%Y-%m-%d").log 2>&1
     # NOTE $LOGS/debug.*.log already contains output
 
-# Check lock directory again after FoundryVTT process finishes
-check_lock
+# Store the PID
+FOUNDRY_PID=$!
+
+# Wait for the Foundry VTT process
+wait $FOUNDRY_PID
 
 # Final log entry after the process exits
 log "FoundryVTT process has exited. Container will now stop."
