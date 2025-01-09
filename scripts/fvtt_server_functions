@@ -90,7 +90,7 @@ update_options_from_env() {
         
         # Log the updated fields
         local updated_fields=$(jq -r 'keys[]' <(echo "$OPTIONS"))
-        log "Updated the following fields in options.json:"
+        log "Processed fields in options.json:"
         echo "$updated_fields" | while read field; do
             log " * $field"
         done
