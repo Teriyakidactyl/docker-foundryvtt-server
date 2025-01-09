@@ -19,7 +19,7 @@ jobs:
     env:
       # Relases: https://nodejs.org/en/about/previous-releases
       # Docker: https://hub.docker.com/_/node
-      NODE_IMAGE_VERSION: "23.1-alpine3.20"
+      NODE_IMAGE_VERSION: "23.6-alpine3.21"
 
     steps:
       # Check out the repository code
