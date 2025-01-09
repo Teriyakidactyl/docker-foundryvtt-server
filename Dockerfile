@@ -16,7 +16,6 @@ FROM node:${NODE_IMAGE_VERSION}
 ENV \
   APP_USER="node" \
   APP_NAME="foundryvtt" \
-  FOUNDRY_RELEASE_URL="" \
   NODE_NO_WARNINGS=1 \
   DATA_PATH="/data" \  
   SCRIPTS="/usr/local/bin" \  
