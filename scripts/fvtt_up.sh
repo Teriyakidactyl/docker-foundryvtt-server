@@ -80,6 +80,3 @@ log "Started Foundry VTT process with PID: $FOUNDRY_PID"
 
 # Wait for the Foundry VTT process
 wait $FOUNDRY_PID
-
-# Final log entry after the process exits
-log "FoundryVTT process has exited. Container will now stop."
