@@ -9,12 +9,12 @@ update_options_from_env
 LOG_NAME="fvtt_up.sh"
 log "Running on Alpine - Version $(cat /etc/alpine-release)"
 
-# Check for unsafe shutdown via 'options.json.lock'
-LOCK_FILE="$DATA_PATH/Config/options.json.lock"
-if [ -f "$LOCK_FILE" ]; then
-    log_error "Detected an unsafe shutdown. The lock file '$LOCK_FILE' exists."
-    # Optionally remove the lock file to clean up (comment out if not needed)
-    # rm -f "$LOCK_FILE"
+# Check for unsafe shutdown via 'options.json.lock' directory
+LOCK_DIR="$DATA_PATH/Config/options.json.lock"
+if [ -d "$LOCK_DIR" ]; then
+    log_error "Detected an unsafe shutdown. The lock directory '$LOCK_DIR' exists."
+    # Optionally remove the lock directory to clean up (comment out if not needed)
+    # rm -rf "$LOCK_DIR"
 fi
 
 # log_tails
