@@ -53,31 +53,56 @@ permissions(){
 update_options_from_env() {
     LOG_NAME_PREVIOUS=$LOG_NAME
     LOG_NAME="fvtt_server_functions, update_options_from_env()"
-
-    # NOTE This is all or nothing. If OPTIONS is present, full config will be overwritten
-    # TODO make this not all or nothing, compare options file to ENV. Only overwrite ENV provided options.
-
+    
     # Define the path to options.json
     local options_file="${DATA_PATH}/Config/options.json"
-
+    
     # Check if the OPTIONS environment variable is set
     if [ -z "$OPTIONS" ]; then
-        return 1  # Exit the function with a non-zero status to indicate failure
+        log_warn "No OPTIONS environment variable set."
+        LOG_NAME=$LOG_NAME_PREVIOUS
+        return 1
     fi
-
-    # Check if options.json exists.
-    if [ -f "$options_file" ]; then
-        # Fetch the OPTIONS environment variable that holds the JSON string
-        local options_json="${OPTIONS}"
-
-        # Write the updated JSON directly to options.json
-        echo "$options_json" > "$options_file"
-
-        log "Updated $options_file with environment variables."
-    else
+    
+    # Check if options.json exists
+    if [ ! -f "$options_file" ]; then
         log_warn "$options_file does not exist. First Run?"
+        # If it's the first run, write the full OPTIONS to the file
+        echo "$OPTIONS" > "$options_file"
+        LOG_NAME=$LOG_NAME_PREVIOUS
+        return 0
     fi
+    
+    # Create a temporary file for the merged result
+    local temp_file=$(mktemp)
+    
+    # Use jq to merge the existing options with the new ones
+    # This will only update fields that exist in OPTIONS
+    jq -s '.[0] * .[1]' "$options_file" <(echo "$OPTIONS") > "$temp_file"
+    
+    # Check if jq command was successful
+    if [ $? -eq 0 ]; then
+        # Backup the original file
+        cp "$options_file" "${options_file}.backup"
+        
+        # Move the merged file to the original location
+        mv "$temp_file" "$options_file"
+        
+        # Log the updated fields
+        local updated_fields=$(jq -r 'keys[]' <(echo "$OPTIONS"))
+        log "Updated the following fields in $options_file:"
+        echo "$updated_fields" | while read field; do
+            log "  - $field"
+        done
+    else
+        log_error "Failed to merge options files"
+        rm -f "$temp_file"
+        LOG_NAME=$LOG_NAME_PREVIOUS
+        return 1
+    fi
+    
     LOG_NAME=$LOG_NAME_PREVIOUS
+    return 0
 }
 
 # TODO admin password @ /data/Config/admin.txt
