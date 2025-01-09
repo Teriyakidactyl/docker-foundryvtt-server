@@ -9,7 +9,13 @@ update_options_from_env
 LOG_NAME="fvtt_up.sh"
 log "Running on Alpine - Version $(cat /etc/alpine-release)"
 
-# TODO search for unsafe shutdown via 'options.json.lock' @ $DATA_PATH/Config/options.json.lock (folder)
+# Check for unsafe shutdown via 'options.json.lock'
+LOCK_FILE="$DATA_PATH/Config/options.json.lock"
+if [ -f "$LOCK_FILE" ]; then
+    log_error "Detected an unsafe shutdown. The lock file '$LOCK_FILE' exists."
+    # Optionally remove the lock file to clean up (comment out if not needed)
+    # rm -f "$LOCK_FILE"
+fi
 
 # log_tails
 # FIXME tail won't pickup new logs until reboot
