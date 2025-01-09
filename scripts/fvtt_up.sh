@@ -50,32 +50,40 @@ check_lock() {
 
 # Function to build Foundry command line flags
 build_foundry_flags() {
-    local FLAGS=""
+    # Initialize array to store flags
+    FOUNDRY_FLAGS=(
+        "--headless"
+        "--dataPath=$DATA_PATH"
+        "--noupnp"
+        "--noipdiscovery"
+        "--noupdate"
+        "--logsize=1024k"
+        "--maxlogs=1"
+        "--port=${FOUNDRY_PORT:-30000}"
+    )
     
-    # Base flags that are always included
-    FLAGS="--headless --dataPath=$DATA_PATH --noupnp --noipdiscovery --noupdate --logsize=1024k --maxlogs=1"
-    
-    # Add port if specified, otherwise use default
-    FLAGS="$FLAGS --port=${FOUNDRY_PORT:-30000}"
-    
-    # Optional flags based on environment variables
-    [ -n "$FOUNDRY_ADMIN_PASSWORD" ] && FLAGS="$FLAGS --adminPassword $FOUNDRY_ADMIN_PASSWORD"
-    [ -n "$FOUNDRY_SSL_CERT" ] && FLAGS="$FLAGS --sslCert $FOUNDRY_SSL_CERT"
-    [ -n "$FOUNDRY_SSL_KEY" ] && FLAGS="$FLAGS --sslKey $FOUNDRY_SSL_KEY"
-    [ -n "$FOUNDRY_WORLD" ] && FLAGS="$FLAGS --world $FOUNDRY_WORLD"
-    [ -n "$FOUNDRY_PROXY_PORT" ] && FLAGS="$FLAGS --proxyPort $FOUNDRY_PROXY_PORT"
-    [ -n "$FOUNDRY_PROXY_SSL" ] && FLAGS="$FLAGS --proxySSL $FOUNDRY_PROXY_SSL"
-    [ -n "$FOUNDRY_ROUTE_PREFIX" ] && FLAGS="$FLAGS --routePrefix $FOUNDRY_ROUTE_PREFIX"
-    [ -n "$FOUNDRY_PASSWORD_SALT" ] && FLAGS="$FLAGS --passwordSalt $FOUNDRY_PASSWORD_SALT"
-    [ -n "$FOUNDRY_UPNP_LEASE_DURATION" ] && FLAGS="$FLAGS --upnpLeaseDuration $FOUNDRY_UPNP_LEASE_DURATION"
+    # Optional flags based on environment variables - properly quote string values
+    [ -n "$FOUNDRY_ADMIN_PASSWORD" ] && FOUNDRY_FLAGS+=("--adminPassword=\"$FOUNDRY_ADMIN_PASSWORD\"")
+    [ -n "$FOUNDRY_SSL_CERT" ] && FOUNDRY_FLAGS+=("--sslCert=\"$FOUNDRY_SSL_CERT\"")
+    [ -n "$FOUNDRY_SSL_KEY" ] && FOUNDRY_FLAGS+=("--sslKey=\"$FOUNDRY_SSL_KEY\"")
+    [ -n "$FOUNDRY_WORLD" ] && FOUNDRY_FLAGS+=("--world=\"$FOUNDRY_WORLD\"")
+    [ -n "$FOUNDRY_PROXY_PORT" ] && FOUNDRY_FLAGS+=("--proxyPort=$FOUNDRY_PROXY_PORT")
+    [ -n "$FOUNDRY_PROXY_SSL" ] && FOUNDRY_FLAGS+=("--proxySSL=$FOUNDRY_PROXY_SSL")
+    [ -n "$FOUNDRY_ROUTE_PREFIX" ] && FOUNDRY_FLAGS+=("--routePrefix=\"$FOUNDRY_ROUTE_PREFIX\"")
+    [ -n "$FOUNDRY_PASSWORD_SALT" ] && FOUNDRY_FLAGS+=("--passwordSalt=\"$FOUNDRY_PASSWORD_SALT\"")
+    [ -n "$FOUNDRY_UPNP_LEASE_DURATION" ] && FOUNDRY_FLAGS+=("--upnpLeaseDuration=$FOUNDRY_UPNP_LEASE_DURATION")
     
     # Boolean flags
-    [ "${FOUNDRY_COMPRESS_STATIC:-true}" = "true" ] && FLAGS="$FLAGS --compressStatic"
-    [ "${FOUNDRY_COMPRESS_SOCKET:-true}" = "true" ] && FLAGS="$FLAGS --compressSocket"
-    [ "${FOUNDRY_FULL_SCREEN:-false}" = "true" ] && FLAGS="$FLAGS --fullscreen"
-    [ "${FOUNDRY_NO_BACKUPS:-false}" = "true" ] && FLAGS="$FLAGS --noBackups"
+    [ "${FOUNDRY_COMPRESS_STATIC:-true}" = "true" ] && FOUNDRY_FLAGS+=("--compressStatic")
+    [ "${FOUNDRY_COMPRESS_SOCKET:-true}" = "true" ] && FOUNDRY_FLAGS+=("--compressSocket")
+    [ "${FOUNDRY_FULL_SCREEN:-false}" = "true" ] && FOUNDRY_FLAGS+=("--fullscreen")
+    [ "${FOUNDRY_NO_BACKUPS:-false}" = "true" ] && FOUNDRY_FLAGS+=("--noBackups")
     
-    echo "$FLAGS"
+    # Log each flag on a separate line
+    log "Starting Foundry VTT with flags:"
+    for flag in "${FOUNDRY_FLAGS[@]}"; do
+        log "  $flag"
+    done
 }
 
 # Set up signal trap with signal logging
@@ -88,9 +96,8 @@ check_lock
 update_app
 update_options_from_env
 
-# Build command line flags
-FOUNDRY_FLAGS=$(build_foundry_flags)
-log "Starting Foundry VTT with flags: $FOUNDRY_FLAGS"
+# Build and store flags
+build_foundry_flags
 
 # Start Foundry VTT in the background
 node $APP_FILES/main.mjs $FOUNDRY_FLAGS &
